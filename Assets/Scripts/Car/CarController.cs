@@ -14,10 +14,16 @@ public class CarController : MonoBehaviour
     private string bodyMaterial = "dbl_WITHOUT_PE_002";
     [SerializeField]
     private string bonnetMaterial = "dbl_bonnet_ok_001";
+    [SerializeField]
+    private string doorOpenClip = "DoorOpen";
+    [SerializeField]
+    private string doorCloseClip = "DoorClose";
     private Animator animator;
 
     private bool carDoorsOpen = false;
     private bool isRotating = true;
+
+    private AudioManager am;
 
     private void OnEnable()
     {
@@ -30,6 +36,7 @@ public class CarController : MonoBehaviour
         if (!cm)
             cm = FindObjectOfType<CameraManager>();
         animator = GetComponent<Animator>();
+        am = AudioManager.instance;
     }
 
     // Update is called once per frame
@@ -45,6 +52,10 @@ public class CarController : MonoBehaviour
                 if (!animator)
                     return;
                 animator.SetBool("doorsOpen", carDoorsOpen);
+                if (!carDoorsOpen)
+                    am.PlayOneShot(doorCloseClip);
+                else
+                    am.PlayOneShot(doorOpenClip);
             }
         }
         else if (Input.GetButtonDown("ChangeColor"))
@@ -70,6 +81,7 @@ public class CarController : MonoBehaviour
     {
         carDoorsOpen = false;
         animator.SetBool("doorsOpen", carDoorsOpen);
+        am.PlayOneShot(doorCloseClip);
     }
 
     private void ChangeColor()
@@ -98,7 +110,7 @@ public class CarController : MonoBehaviour
     private void RotateCar()
     {
         isRotating = false;
-        var rotX = Input.GetAxis("Mouse X") *  rotSpeed * Mathf.Deg2Rad;
+        var rotX = Input.GetAxis("Mouse X") * rotSpeed * Mathf.Deg2Rad;
         transform.Rotate(Vector3.up, -rotX);
     }
 
